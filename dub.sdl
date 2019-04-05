@@ -1,0 +1,14 @@
+name "bud"
+description "dub replacement"
+
+targetType "executable"
+targetPath "bin"
+dflags "-preview=dip25" "-preview=dip1000" "-preview=dip1008"
+
+dependency "dub" version="~>1.14.0"
+subConfiguration "dub" "library"
+
+
+configuration "executable" {
+
+}
