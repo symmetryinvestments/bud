@@ -15,5 +15,13 @@ configuration "executable" {
 
 
 configuration "unittest" {
+    targetName "test"
+    targetType "executable"
 
+    sourcePaths "tests"
+    importPaths "tests"
+    mainSourceFile "tests/main.d"
+    excludedSourceFiles "source/main.d"
+
+    dependency "unit-threaded" version="*"
 }
