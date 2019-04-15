@@ -7,6 +7,11 @@ import dub.info;
 
 @("exe.simple")
 @safe unittest {
+
+    import dub.compilers.buildsettings;
+    import std.algorithm: map;
+    import std.path: buildPath;
+
     with(immutable Sandbox()) {
         writeFile("dub.sdl",
             [
@@ -22,8 +27,8 @@ import dub.info;
                   "void main() {}");
 
         const tgts = targets(ProjectPath(testPath));
-        const keys = () @trusted { return tgts.keys.dup; }();
-
-        keys.should == ["default"];
+        tgts.should == [
+            Target("foo", ["-debug", "-g", "-w"]),
+        ];
     }
 }
