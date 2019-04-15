@@ -24,33 +24,15 @@ static this() nothrow {
 struct ProjectPath { string value; }
 
 
-Target[] targets(in ProjectPath projectPath) @trusted {
+Target[] targets(in Settings settings) @trusted {
     import dub.generators.generator: ProjectGenerator;
-    import dub.internal.vibecompat.inet.path: NativePath;
-    import dub.packagemanager: PackageManager;
-    import dub.package_: Package;
-    import dub.project: Project;
-    import dub.generators.generator: GeneratorSettings;
-    import dub.compilers.compiler: getCompiler;
-    import std.file: readText;
-    import std.path: buildPath;
 
-    const userPath = NativePath("/dev/null");
-    const systemPath = NativePath("/dev/null");
-    auto packageManager = new PackageManager(userPath, systemPath, false);
+    static class TargetGenerator: ProjectGenerator {
+        import dub.project: Project;
+        import dub.generators.generator: GeneratorSettings;
 
-    const nativeProjectPath = NativePath(projectPath.value);
-    auto pkg = new Package(recipe(projectPath), nativeProjectPath);
-    auto project = new Project(packageManager, pkg);
+        Target[] targets;
 
-    auto settings = GeneratorSettings();
-    settings.buildType = "debug";
-    settings.compiler = getCompiler("dmd");
-    settings.platform.compilerBinary = "dmd";
-
-    Target[] ret;
-
-    class TargetGenerator: ProjectGenerator {
         this(Project project) {
             super(project);
         }
@@ -62,21 +44,54 @@ Target[] targets(in ProjectPath projectPath) @trusted {
 
                 auto newBuildSettings = targetInfo.buildSettings.dup;
                 settings.compiler.prepareBuildSettings(newBuildSettings, BuildSetting.noOptions /*???*/);
-                ret ~= Target(targetName, newBuildSettings.dflags);
+                this.targets ~= Target(targetName, newBuildSettings.dflags);
             }
         }
     }
 
+    auto project = project(settings.projectPath);
     auto generator = new TargetGenerator(project);
-    generator.generate(settings);
+    generator.generate(settingsToGeneratorSettings(settings));
 
-    return ret;
+    return generator.targets;
 }
 
 
 struct Target {
     string name;
     string[] dflags;
+}
+
+struct Settings {
+    ProjectPath projectPath;
+}
+
+
+private auto settingsToGeneratorSettings(in Settings settings) @safe {
+    import dub.compilers.compiler: getCompiler;
+    import dub.generators.generator: GeneratorSettings;
+
+    GeneratorSettings ret;
+
+    ret.buildType = "debug";
+    ret.compiler = () @trusted { return getCompiler("dmd"); }();
+    ret.platform.compilerBinary = "dmd";
+
+    return ret;
+}
+
+private auto project(in ProjectPath projectPath) @trusted {
+    import dub.project: Project;
+    auto pkg = dubPackage(projectPath);
+    return new Project(packageManager, pkg);
+}
+
+private auto dubPackage(in ProjectPath projectPath) @trusted  {
+    import dub.internal.vibecompat.inet.path: NativePath;
+    import dub.package_: Package;
+
+    const nativeProjectPath = NativePath(projectPath.value);
+    return new Package(recipe(projectPath), nativeProjectPath);
 }
 
 
@@ -91,4 +106,15 @@ private auto recipe(in ProjectPath projectPath) @safe {
     () @trusted { parseSDL(recipe, text, "parent", "dub.sdl"); }();
 
     return recipe;
+}
+
+
+private auto packageManager() {
+    import dub.internal.vibecompat.inet.path: NativePath;
+    import dub.packagemanager: PackageManager;
+
+    const userPath = NativePath("/dev/null");
+    const systemPath = NativePath("/dev/null");
+
+    return new PackageManager(userPath, systemPath, false);
 }

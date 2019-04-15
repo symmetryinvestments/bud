@@ -26,7 +26,7 @@ import dub.info;
         writeFile("source/app.d",
                   "void main() {}");
 
-        const tgts = targets(ProjectPath(testPath));
+        const tgts = targets(Settings(ProjectPath(testPath)));
         tgts.should == [
             Target("foo", ["-debug", "-g", "-w"]),
         ];
