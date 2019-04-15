@@ -8,7 +8,7 @@ void main() {
     const text = readText("dub.sdl");
     PackageRecipe recipe;
     parseSDL(recipe, text, "parent", "dub.sdl");
-    writeln(recipe, "\n\n");
+    //writeln(recipe, "\n\n");
 
     import dub.package_: Package;
     import dub.internal.vibecompat.inet.path: NativePath;
@@ -16,7 +16,7 @@ void main() {
     const path = NativePath(buildNormalizedPath(thisExePath.dirName, ".."));
     auto pkg = new Package(recipe, path);
 
-    writeln("package: ", pkg, "\n\n");
+    //writeln("package: ", pkg, "\n\n");
 
     import dub.packagemanager: PackageManager;
     import dub.project: Project;
@@ -26,12 +26,12 @@ void main() {
 
     const userPath = NativePath("~/.dub".expandTilde);
     const systemPath = NativePath("/not/using/this");
-    auto pman = new PackageManager(userPath, systemPath, false);
-    auto proj = new Project(pman, pkg);
+    auto packageManager = new PackageManager(userPath, systemPath, false);
+    auto project = new Project(packageManager, pkg);
 
     auto settings = GeneratorSettings();
-    settings.config = "executable";
-    settings.buildType = "debug";
+    settings.config = "unittest";
+    settings.buildType = "unittest";  // yes, has to be set manually here
     // settings.compiler = new DMDCompiler doesn't work. They need to be
     // registered and for some reason the dub static ctor that does this
     // isn't being called.
@@ -39,5 +39,36 @@ void main() {
     settings.compiler = getCompiler("dmd");
     settings.platform.compilerBinary = "dmd";
 
-    writeln("describe: ", proj.describe(settings), "\n\n");
+    // Ends up being the same as the JSON with `dub describe`
+    // The real information is in the generators
+    //writeln("describe: ", project.describe(settings), "\n\n");
+
+    auto generator = new MyGenerator(project);
+    generator.generate(settings);
+}
+
+
+import dub.generators.generator: ProjectGenerator;
+
+class MyGenerator: ProjectGenerator {
+
+    import dub.project: Project;
+    import dub.generators.generator: GeneratorSettings;
+
+    this(Project project) {
+        super(project);
+    }
+
+    override void generateTargets(GeneratorSettings settings, in TargetInfo[string] targets) {
+        import dub.compilers.buildsettings;
+        import std.stdio;
+
+        foreach(name, targetInfo; targets) {
+            writeln("name: ", name);
+            auto newBuildSettings = targetInfo.buildSettings.dup;
+            settings.compiler.prepareBuildSettings(newBuildSettings, BuildSetting.noOptions /*???*/);
+            writeln("Build settings D flags: ", newBuildSettings.dflags);
+            writeln;
+        }
+    }
 }

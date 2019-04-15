@@ -12,3 +12,8 @@ subConfiguration "dub" "library"
 configuration "executable" {
 
 }
+
+
+configuration "unittest" {
+
+}
