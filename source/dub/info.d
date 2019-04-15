@@ -29,8 +29,6 @@ Target[] targets(in ProjectPath projectPath) @trusted {
     import dub.internal.vibecompat.inet.path: NativePath;
     import dub.packagemanager: PackageManager;
     import dub.package_: Package;
-    import dub.recipe.packagerecipe: PackageRecipe;
-    import dub.recipe.sdl: parseSDL;
     import dub.project: Project;
     import dub.generators.generator: GeneratorSettings;
     import dub.compilers.compiler: getCompiler;
@@ -41,12 +39,8 @@ Target[] targets(in ProjectPath projectPath) @trusted {
     const systemPath = NativePath("/dev/null");
     auto packageManager = new PackageManager(userPath, systemPath, false);
 
-    const text = readText(buildPath(projectPath.value, "dub.sdl"));
-    PackageRecipe recipe;
-    parseSDL(recipe, text, "parent", "dub.sdl");
-
     const nativeProjectPath = NativePath(projectPath.value);
-    auto pkg = new Package(recipe, nativeProjectPath);
+    auto pkg = new Package(recipe(projectPath), nativeProjectPath);
     auto project = new Project(packageManager, pkg);
 
     auto settings = GeneratorSettings();
@@ -83,4 +77,18 @@ Target[] targets(in ProjectPath projectPath) @trusted {
 struct Target {
     string name;
     string[] dflags;
+}
+
+
+private auto recipe(in ProjectPath projectPath) @safe {
+    import dub.recipe.packagerecipe: PackageRecipe;
+    import dub.recipe.sdl: parseSDL;
+    import std.file: readText;
+    import std.path: buildPath;
+
+    const text = readText(buildPath(projectPath.value, "dub.sdl"));
+    PackageRecipe recipe;
+    () @trusted { parseSDL(recipe, text, "parent", "dub.sdl"); }();
+
+    return recipe;
 }
