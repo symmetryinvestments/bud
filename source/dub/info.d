@@ -1,18 +1,16 @@
 module dub.info;
 
 
-// not shared because, for unknown reasons, dub registers compilers
+// Not shared because, for unknown reasons, dub registers compilers
 // in thread-local storage so we register the compilers in all
-// threads
+// threads. In normal dub usage it's done in of one dub's static
+// constructors. In one thread.
 static this() nothrow {
     import dub.compilers.compiler: registerCompiler;
     import dub.compilers.dmd: DMDCompiler;
 
-    // normally done in dub's static ctor but for some reason
-    // that's not working
     try {
         registerCompiler(new DMDCompiler);
-
     } catch(Exception e) {
         import std.stdio: stderr;
         try
@@ -43,7 +41,8 @@ Target[] targets(in Settings settings) @trusted {
             foreach(targetName, targetInfo; targets) {
 
                 auto newBuildSettings = targetInfo.buildSettings.dup;
-                settings.compiler.prepareBuildSettings(newBuildSettings, BuildSetting.noOptions /*???*/);
+                settings.compiler.prepareBuildSettings(newBuildSettings,
+                                                       BuildSetting.noOptions /*???*/);
                 this.targets ~= Target(targetName, newBuildSettings.dflags);
             }
         }
@@ -113,7 +112,7 @@ private auto packageManager() {
     import dub.internal.vibecompat.inet.path: NativePath;
     import dub.packagemanager: PackageManager;
 
-    const userPath = NativePath("/dev/null");
+    const userPath = NativePath("/dev/null");  // normally ~/.dub
     const systemPath = NativePath("/dev/null");
 
     return new PackageManager(userPath, systemPath, false);
