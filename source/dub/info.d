@@ -20,9 +20,13 @@ static this() nothrow {
 }
 
 struct ProjectPath { string value; }
+/// Normally ~/.dub
+struct UserPackagesPath { string value = "/dev/null"; }
 
 
-Target[] targets(in Settings settings) @trusted {
+Target[] targets(in Settings settings)
+    @trusted  // dub...
+{
     import dub.generators.generator: ProjectGenerator;
 
     static class TargetGenerator: ProjectGenerator {
@@ -48,7 +52,7 @@ Target[] targets(in Settings settings) @trusted {
         }
     }
 
-    auto project = project(settings.projectPath);
+    auto project = project(settings.projectPath, settings.userPackagesPath);
     auto generator = new TargetGenerator(project);
     generator.generate(settingsToGeneratorSettings(settings));
 
@@ -63,6 +67,7 @@ struct Target {
 
 struct Settings {
     ProjectPath projectPath;
+    UserPackagesPath userPackagesPath;
 }
 
 
@@ -79,10 +84,12 @@ private auto settingsToGeneratorSettings(in Settings settings) @safe {
     return ret;
 }
 
-private auto project(in ProjectPath projectPath) @trusted {
+private auto project(in ProjectPath projectPath, in UserPackagesPath userPackagesPath)
+    @trusted
+{
     import dub.project: Project;
     auto pkg = dubPackage(projectPath);
-    return new Project(packageManager, pkg);
+    return new Project(packageManager(userPackagesPath), pkg);
 }
 
 private auto dubPackage(in ProjectPath projectPath) @trusted  {
@@ -108,12 +115,13 @@ private auto recipe(in ProjectPath projectPath) @safe {
 }
 
 
-private auto packageManager() {
+private auto packageManager(in UserPackagesPath userPackagesPath) @trusted {
     import dub.internal.vibecompat.inet.path: NativePath;
     import dub.packagemanager: PackageManager;
 
-    const userPath = NativePath("/dev/null");  // normally ~/.dub
+    const userPath = NativePath(userPackagesPath.value);
     const systemPath = NativePath("/dev/null");
 
-    return new PackageManager(userPath, systemPath, false);
+    const refreshPackages = false;
+    return new PackageManager(userPath, systemPath, refreshPackages);
 }
