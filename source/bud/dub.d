@@ -1,4 +1,11 @@
-module dub.info;
+/**
+   Interoperation with dub, made easy.
+ */
+module bud.dub;
+
+
+import bud.build.info: ProjectPath, UserPackagesPath;
+import dub.generators.generator: ProjectGenerator;
 
 
 // Not shared because, for unknown reasons, dub registers compilers
@@ -19,59 +26,8 @@ static this() nothrow {
     }
 }
 
-struct ProjectPath { string value; }
-/// Normally ~/.dub
-struct UserPackagesPath { string value = "/dev/null"; }
 
-
-Target[] targets(in Settings settings)
-    @trusted  // dub...
-{
-    import dub.generators.generator: ProjectGenerator;
-
-    static class TargetGenerator: ProjectGenerator {
-        import dub.project: Project;
-        import dub.generators.generator: GeneratorSettings;
-
-        Target[] targets;
-
-        this(Project project) {
-            super(project);
-        }
-
-        override void generateTargets(GeneratorSettings settings, in TargetInfo[string] targets) {
-            import dub.compilers.buildsettings: BuildSetting;
-
-            foreach(targetName, targetInfo; targets) {
-
-                auto newBuildSettings = targetInfo.buildSettings.dup;
-                settings.compiler.prepareBuildSettings(newBuildSettings,
-                                                       BuildSetting.noOptions /*???*/);
-                this.targets ~= Target(targetName, newBuildSettings.dflags);
-            }
-        }
-    }
-
-    auto project = project(settings.projectPath, settings.userPackagesPath);
-    auto generator = new TargetGenerator(project);
-    generator.generate(settingsToGeneratorSettings(settings));
-
-    return generator.targets;
-}
-
-
-struct Target {
-    string name;
-    string[] dflags;
-}
-
-struct Settings {
-    ProjectPath projectPath;
-    UserPackagesPath userPackagesPath;
-}
-
-
-private auto settingsToGeneratorSettings(in Settings settings) @safe {
+auto generatorSettings() @safe {
     import dub.compilers.compiler: getCompiler;
     import dub.generators.generator: GeneratorSettings;
 
@@ -84,7 +40,8 @@ private auto settingsToGeneratorSettings(in Settings settings) @safe {
     return ret;
 }
 
-private auto project(in ProjectPath projectPath, in UserPackagesPath userPackagesPath)
+
+auto project(in ProjectPath projectPath, in UserPackagesPath userPackagesPath)
     @trusted
 {
     import dub.project: Project;
@@ -92,7 +49,8 @@ private auto project(in ProjectPath projectPath, in UserPackagesPath userPackage
     return new Project(packageManager(userPackagesPath), pkg);
 }
 
-private auto dubPackage(in ProjectPath projectPath) @trusted  {
+
+private auto dubPackage(in ProjectPath projectPath) @trusted {
     import dub.internal.vibecompat.inet.path: NativePath;
     import dub.package_: Package;
 
@@ -124,4 +82,29 @@ auto packageManager(in UserPackagesPath userPackagesPath) @trusted {
 
     const refreshPackages = false;
     return new PackageManager(userPath, systemPath, refreshPackages);
+}
+
+
+class TargetGenerator: ProjectGenerator {
+    import bud.build.info: Target;
+    import dub.project: Project;
+    import dub.generators.generator: GeneratorSettings;
+
+    Target[] targets;
+
+    this(Project project) {
+        super(project);
+    }
+
+    override void generateTargets(GeneratorSettings settings, in TargetInfo[string] targets) {
+        import dub.compilers.buildsettings: BuildSetting;
+
+        foreach(targetName, targetInfo; targets) {
+
+            auto newBuildSettings = targetInfo.buildSettings.dup;
+            settings.compiler.prepareBuildSettings(newBuildSettings,
+                                                   BuildSetting.noOptions /*???*/);
+            this.targets ~= Target(targetName, newBuildSettings.dflags);
+        }
+    }
 }

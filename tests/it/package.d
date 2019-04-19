@@ -2,7 +2,7 @@ module it;
 
 
 public import unit_threaded;
-import dub.info;
+import bud.build.info;
 
 
 @("exe.simple")
@@ -26,7 +26,7 @@ import dub.info;
         writeFile("source/app.d",
                   "void main() {}");
 
-        const tgts = targets(Settings(ProjectPath(testPath)));
+        const tgts = targets(ProjectPath(testPath), UserPackagesPath());
         tgts.should == [
             Target("foo", ["-debug", "-g", "-w"]),
         ];
@@ -79,12 +79,10 @@ import dub.info;
         writeFile("userpath/packages/bar-1.2.3/bar/source/bar.d",
                   "int add1(int i, int j) { return i + j; }");
 
-        const settings = Settings(
+        const tgts = targets(
             ProjectPath(testPath),
             UserPackagesPath(inSandboxPath("userpath")),
         );
-
-        const tgts = targets(settings);
 
         // apparently dflags is viral
         tgts.should == [
@@ -97,6 +95,7 @@ import dub.info;
 
 @("storeFetchedPackage")
 @safe unittest {
+    import bud.dub: packageManager;
     import dub.internal.vibecompat.data.json: parseJson;
     import std.array: join;
     import std.file: write, readText;
@@ -132,10 +131,10 @@ import dub.info;
 
     with(sandbox) {
         import dub.internal.vibecompat.inet.path: NativePath;
-        auto packageManager = packageManager(UserPackagesPath(inSandboxPath("userpath")));
+        auto pkgMan = packageManager(UserPackagesPath(inSandboxPath("userpath")));
 
         () @trusted {
-            packageManager.storeFetchedPackage(
+            pkgMan.storeFetchedPackage(
                 NativePath(inSandboxPath(buildPath("zips", "foo.zip"))),
                 metadataJson,
                 NativePath(inSandboxPath(buildPath("otherpath", "foo-1.2.3", "foo"))),
