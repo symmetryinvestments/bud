@@ -115,7 +115,7 @@ private auto recipe(in ProjectPath projectPath) @safe {
 }
 
 
-private auto packageManager(in UserPackagesPath userPackagesPath) @trusted {
+auto packageManager(in UserPackagesPath userPackagesPath) @trusted {
     import dub.internal.vibecompat.inet.path: NativePath;
     import dub.packagemanager: PackageManager;
 
