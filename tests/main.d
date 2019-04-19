@@ -1,5 +1,6 @@
 import unit_threaded.runner: runTestsMain;
 
 mixin runTestsMain!(
-    "it",
+    "it.build",
+    "it.fetch",
 );
