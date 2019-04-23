@@ -4,16 +4,14 @@ module it.fetch;
 import it;
 import test.zip;
 import bud.build.info: UserPackagesPath;
+import bud.dub: Packages, Path, JSONString;
 
 
 @("store.zip")
 @safe unittest {
-    import bud.dub: packageManager;
-    import dub.internal.vibecompat.data.json: parseJson;
     import std.array: join;
-    import std.file: write, readText;
+    import std.file: readText;
     import std.path: buildPath;
-    import std.json: parseJSON;
 
     const dubSdl = [
         `name "foo"`,
@@ -40,21 +38,12 @@ import bud.build.info: UserPackagesPath;
         ]
     }`;
 
-    auto metadataJson = () @trusted { return parseJson(metadataStr); }();
-
     with(sandbox) {
-        import dub.internal.vibecompat.inet.path: NativePath;
-        auto pkgMan = packageManager(UserPackagesPath(inSandboxPath("userpath")));
+        auto pkgs = Packages(UserPackagesPath(inSandboxPath("userpath")));
+        pkgs.storeZip(Path(inSandboxPath(buildPath("zips", "foo.zip"))),
+                      JSONString(metadataStr));
 
-        () @trusted {
-            pkgMan.storeFetchedPackage(
-                NativePath(inSandboxPath(buildPath("zips", "foo.zip"))),
-                metadataJson,
-                NativePath(inSandboxPath(buildPath("otherpath", "foo-1.2.3", "foo"))),
-            );
-        }();
-
-        const dubJson = inSandboxPath(buildPath("otherpath", "foo-1.2.3", "foo", "dub.json"));
+        const dubJson = inSandboxPath(buildPath("userpath", "foo-1.2.3", "foo", "dub.json"));
         shouldExist(dubJson);
         readText(dubJson).shouldBeSameJsonAs(
             `
