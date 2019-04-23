@@ -12,7 +12,7 @@ import bud.build.info;
     import std.algorithm: map;
     import std.path: buildPath;
 
-    with(immutable Sandbox()) {
+    with(immutable BudSandbox()) {
         writeFile("dub.sdl",
             [
                 `name "foo"`,
@@ -20,8 +20,7 @@ import bud.build.info;
             ]
         );
 
-        writeFile("dub.selections.json",
-                  `{ "fileVersion": 1, "versions": {} }`);
+        writeSelections;
 
         writeFile("source/app.d",
                   "void main() {}");
@@ -41,7 +40,7 @@ import bud.build.info;
     import std.algorithm: map;
     import std.path: buildPath;
 
-    with(immutable Sandbox()) {
+    with(immutable BudSandbox()) {
         writeFile("dub.sdl",
             [
                 `name "foo"`,
@@ -50,16 +49,7 @@ import bud.build.info;
             ]
         );
 
-        writeFile("dub.selections.json",
-                  [
-                      `{`,
-                      `    "fileVersion": 1,`,
-                      `    "versions": {`,
-                      `        "bar": "1.2.3"`,
-                      `    }`,
-                      `}`,
-                  ]
-        );
+        writeSelections(["bar": "1.2.3"]);
 
         writeFile("source/app.d",
                   "void main() {}");
