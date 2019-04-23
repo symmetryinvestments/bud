@@ -4,7 +4,7 @@ module it.fetch;
 import it;
 import test.zip;
 import bud.build.info: UserPackagesPath;
-import bud.dub: Packages, Path, JSONString;
+import bud.dub: DubPackages, Path, JSONString;
 
 
 @("store.zip")
@@ -39,7 +39,7 @@ import bud.dub: Packages, Path, JSONString;
     }`;
 
     with(sandbox) {
-        auto pkgs = Packages(UserPackagesPath(inSandboxPath("userpath")));
+        auto pkgs = DubPackages(UserPackagesPath(inSandboxPath("userpath")));
         pkgs.storeZip(Path(inSandboxPath(buildPath("zips", "foo.zip"))),
                       JSONString(metadataStr));
 

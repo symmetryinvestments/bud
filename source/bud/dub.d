@@ -36,7 +36,7 @@ struct JSONString {
 }
 
 
-struct Packages {
+struct DubPackages {
 
     import dub.packagemanager: PackageManager;
 
