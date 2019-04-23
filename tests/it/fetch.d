@@ -43,7 +43,7 @@ import bud.dub: DubPackages, Path, JSONString;
         pkgs.storeZip(Path(inSandboxPath(buildPath("zips", "foo.zip"))),
                       JSONString(metadataStr));
 
-        const dubJson = inSandboxPath(buildPath("userpath", "foo-1.2.3", "foo", "dub.json"));
+        const dubJson = inSandboxPath(buildPath("userpath", "packages", "foo-1.2.3", "foo", "dub.json"));
         shouldExist(dubJson);
         readText(dubJson).shouldBeSameJsonAs(
             `

@@ -68,7 +68,7 @@ struct DubPackages {
             _packageManager.storeFetchedPackage(
                 NativePath(zip.value),
                 metadataJson,
-                NativePath(buildPath(_userPackagesPath, name ~ "-" ~ version_, name)),
+                NativePath(buildPath(_userPackagesPath, "packages", name ~ "-" ~ version_, name)),
             );
         }();
 
