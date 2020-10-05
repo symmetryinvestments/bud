@@ -15,7 +15,7 @@ configuration "executable" {
 
 
 configuration "unittest" {
-    targetName "test"
+    targetName "ut"
     targetType "executable"
 
     sourcePaths "tests"
