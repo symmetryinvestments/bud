@@ -5,7 +5,7 @@ import it;
 import bud.build.info;
 
 
-@("targets.simplest")
+@("targets.simplest.dmd")
 @safe unittest {
 
     import dub.compilers.buildsettings;
@@ -25,12 +25,84 @@ import bud.build.info;
         writeFile("source/app.d",
                   "void main() {}");
 
-        const tgts = targets(ProjectPath(testPath), UserPackagesPath());
+        const tgts = targets(
+            ProjectPath(testPath),
+            UserPackagesPath(),
+            Compiler.dmd,
+        );
+
         tgts.should == [
             Target("foo", ["-debug", "-g", "-w"]),
         ];
     }
 }
+
+
+@("targets.simplest.ldc")
+@safe unittest {
+
+    import dub.compilers.buildsettings;
+    import std.algorithm: map;
+    import std.path: buildPath;
+
+    with(immutable BudSandbox()) {
+        writeFile("dub.sdl",
+            [
+                `name "foo"`,
+                `targetType "executable"`,
+            ]
+        );
+
+        writeSelections;
+
+        writeFile("source/app.d",
+                  "void main() {}");
+
+        const tgts = targets(
+            ProjectPath(testPath),
+            UserPackagesPath(),
+            Compiler.ldc,
+        );
+
+        tgts.should == [
+            const Target("foo", ["-d-debug", "-g", "-w", "-oq", "-od=.dub/obj"]),
+        ];
+    }
+}
+
+
+@("targets.simplest.ldc")
+@safe unittest {
+
+    import dub.compilers.buildsettings;
+    import std.algorithm: map;
+    import std.path: buildPath;
+
+    with(immutable BudSandbox()) {
+        writeFile("dub.sdl",
+            [
+                `name "foo"`,
+                `targetType "executable"`,
+            ]
+        );
+
+        writeSelections;
+
+        writeFile("source/app.d",
+                  "void main() {}");
+
+        const tgts = targets(
+            ProjectPath(testPath),
+            UserPackagesPath(),
+            Compiler.gdc,
+        );
+
+        tgts.should == [
+            const Target("foo", ["-fdebug", "-g", "-Werror", "-Wall"]),
+        ];
+    }
+}
+
 
 
 @("targets.dependencies")
@@ -72,6 +144,7 @@ import bud.build.info;
         const tgts = targets(
             ProjectPath(testPath),
             UserPackagesPath(inSandboxPath("userpath")),
+            Compiler.dmd,
         );
 
         // apparently dflags is viral

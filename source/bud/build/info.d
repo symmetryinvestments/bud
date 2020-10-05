@@ -23,14 +23,25 @@ struct Target {
 }
 
 
-Target[] targets(in ProjectPath projectPath, in UserPackagesPath userPackagesPath)
+enum Compiler {
+    dmd,
+    ldc,
+    gdc,
+}
+
+Target[] targets(
+    in ProjectPath projectPath,
+    in UserPackagesPath userPackagesPath,
+    in Compiler compiler,
+    )
     @trusted  // dub...
 {
     import bud.dub: project, generatorSettings, TargetGenerator;
 
     auto proj = project(projectPath, userPackagesPath);
     auto generator = new TargetGenerator(proj);
-    generator.generate(generatorSettings);
+
+    generator.generate(generatorSettings(compiler));
 
     return generator.targets;
 }

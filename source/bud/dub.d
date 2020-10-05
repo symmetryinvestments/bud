@@ -4,7 +4,7 @@
 module bud.dub;
 
 
-import bud.build.info: ProjectPath, UserPackagesPath;
+import bud.build.info: ProjectPath, UserPackagesPath, Compiler;
 import dub.generators.generator: ProjectGenerator;
 
 
@@ -15,9 +15,13 @@ import dub.generators.generator: ProjectGenerator;
 static this() nothrow {
     import dub.compilers.compiler: registerCompiler;
     import dub.compilers.dmd: DMDCompiler;
+    import dub.compilers.ldc: LDCCompiler;
+    import dub.compilers.gdc: GDCCompiler;
 
     try {
         registerCompiler(new DMDCompiler);
+        registerCompiler(new LDCCompiler);
+        registerCompiler(new GDCCompiler);
     } catch(Exception e) {
         import std.stdio: stderr;
         try
@@ -75,15 +79,17 @@ struct DubPackages {
     }
 }
 
-auto generatorSettings() @safe {
+auto generatorSettings(in Compiler compiler) @safe {
     import dub.compilers.compiler: getCompiler;
     import dub.generators.generator: GeneratorSettings;
+    import std.conv;
 
     GeneratorSettings ret;
 
+    const compilerName = compiler.text;
     ret.buildType = "debug";
-    ret.compiler = () @trusted { return getCompiler("dmd"); }();
-    ret.platform.compilerBinary = "dmd";
+    ret.compiler = () @trusted { return getCompiler(compilerName); }();
+    ret.platform.compilerBinary = compilerName;
 
     return ret;
 }
