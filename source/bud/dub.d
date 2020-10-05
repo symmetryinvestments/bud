@@ -16,10 +16,12 @@ static this() nothrow {
     import dub.compilers.compiler: registerCompiler;
     import dub.compilers.dmd: DMDCompiler;
     import dub.compilers.ldc: LDCCompiler;
+    import dub.compilers.gdc: GDCCompiler;
 
     try {
         registerCompiler(new DMDCompiler);
         registerCompiler(new LDCCompiler);
+        registerCompiler(new GDCCompiler);
     } catch(Exception e) {
         import std.stdio: stderr;
         try

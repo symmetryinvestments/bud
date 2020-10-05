@@ -26,6 +26,7 @@ struct Target {
 enum Compiler {
     dmd,
     ldc,
+    gdc,
 }
 
 Target[] targets(
