@@ -25,6 +25,7 @@ struct Target {
 
 enum Compiler {
     dmd,
+    ldc,
 }
 
 Target[] targets(
@@ -38,7 +39,8 @@ Target[] targets(
 
     auto proj = project(projectPath, userPackagesPath);
     auto generator = new TargetGenerator(proj);
-    generator.generate(generatorSettings);
+
+    generator.generate(generatorSettings(compiler));
 
     return generator.targets;
 }

@@ -28,7 +28,7 @@ import bud.build.info;
         const tgts = targets(
             ProjectPath(testPath),
             UserPackagesPath(),
-            Compiler.dmd
+            Compiler.dmd,
         );
 
         tgts.should == [
@@ -36,6 +36,40 @@ import bud.build.info;
         ];
     }
 }
+
+
+@("targets.simplest")
+@safe unittest {
+
+    import dub.compilers.buildsettings;
+    import std.algorithm: map;
+    import std.path: buildPath;
+
+    with(immutable BudSandbox()) {
+        writeFile("dub.sdl",
+            [
+                `name "foo"`,
+                `targetType "executable"`,
+            ]
+        );
+
+        writeSelections;
+
+        writeFile("source/app.d",
+                  "void main() {}");
+
+        const tgts = targets(
+            ProjectPath(testPath),
+            UserPackagesPath(),
+            Compiler.ldc,
+        );
+
+        tgts.should == [
+            const Target("foo", ["-d-debug", "-g", "-w", "-oq", "-od=.dub/obj"]),
+        ];
+    }
+}
+
 
 
 @("targets.dependencies")
