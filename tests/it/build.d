@@ -25,7 +25,12 @@ import bud.build.info;
         writeFile("source/app.d",
                   "void main() {}");
 
-        const tgts = targets(ProjectPath(testPath), UserPackagesPath());
+        const tgts = targets(
+            ProjectPath(testPath),
+            UserPackagesPath(),
+            Compiler.dmd
+        );
+
         tgts.should == [
             Target("foo", ["-debug", "-g", "-w"]),
         ];
@@ -72,6 +77,7 @@ import bud.build.info;
         const tgts = targets(
             ProjectPath(testPath),
             UserPackagesPath(inSandboxPath("userpath")),
+            Compiler.dmd,
         );
 
         // apparently dflags is viral
