@@ -104,7 +104,6 @@ import std.algorithm: map;
 @safe unittest {
 
     import dub.compilers.buildsettings;
-    import std.algorithm: map;
     import std.path: buildPath;
 
     with(immutable BudSandbox()) {

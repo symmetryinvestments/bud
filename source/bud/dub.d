@@ -145,6 +145,8 @@ class InfoGenerator: ProjectGenerator {
     import dub.generators.generator: GeneratorSettings;
 
     DubPackage[] dubPackages;
+    string defaultConfiguration;
+    string[] configurations;
 
     this(Project project) {
         super(project);
@@ -170,6 +172,9 @@ class InfoGenerator: ProjectGenerator {
     */
     override void generateTargets(GeneratorSettings settings, in TargetInfo[string] targets) @trusted {
         import dub.compilers.buildsettings: BuildSetting;
+
+        defaultConfiguration = m_project.getDefaultConfiguration(settings.platform);
+        configurations = m_project.configurations.dup;
 
         foreach(targetName, targetInfo; targets) {
 

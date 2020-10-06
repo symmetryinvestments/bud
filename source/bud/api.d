@@ -28,3 +28,9 @@ enum Compiler {
     ldc,
     gdc,
 }
+
+
+struct DubConfigurations {
+    string[] configurations;
+    string default_;
+}
