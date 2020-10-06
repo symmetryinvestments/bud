@@ -23,7 +23,7 @@ UserPackagesPath userPackagesPath() {
     import std.file: getcwd;
 
     version(Windows)
-        enum path = NativePath(environment.get("LOCALAPPDATA", appDataDir)) ~ "dub";
+        enum path = buildPath(environment.get("LOCALAPPDATA", appDataDir), "dub");
     else version(Posix) {
         string path = buildPath(environment.get("HOME"), ".dub/");
         if(!path.isAbsolute)
@@ -45,7 +45,7 @@ SystemPackagesPath systemPackagesPath() {
     import std.path: buildPath;
 
     version(Windows)
-        const path = buildPath(environment.get("ProgramData") ~ "dub/");
+        const path = buildPath(environment.get("ProgramData"), "dub/");
     else version(Posix)
         const path = "/var/lib/dub/";
     else
