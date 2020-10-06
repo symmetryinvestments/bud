@@ -79,17 +79,17 @@ struct DubPackages {
     }
 }
 
-auto generatorSettings(in Compiler compiler) @safe {
+auto generatorSettings(in Compiler compiler = Compiler.dmd) @safe {
     import dub.compilers.compiler: getCompiler;
     import dub.generators.generator: GeneratorSettings;
     import std.conv;
 
     GeneratorSettings ret;
 
+    ret.buildType = "debug";  // FIXME
     const compilerName = compiler.text;
-    ret.buildType = "debug";
     ret.compiler = () @trusted { return getCompiler(compilerName); }();
-    ret.platform.compilerBinary = compilerName;
+    ret.platform.compilerBinary = compilerName;  // FIXME?
 
     return ret;
 }
@@ -145,8 +145,6 @@ class InfoGenerator: ProjectGenerator {
     import dub.generators.generator: GeneratorSettings;
 
     DubPackage[] dubPackages;
-    string defaultConfiguration;
-    string[] configurations;
 
     this(Project project) {
         super(project);
@@ -173,9 +171,6 @@ class InfoGenerator: ProjectGenerator {
     override void generateTargets(GeneratorSettings settings, in TargetInfo[string] targets) @trusted {
         import dub.compilers.buildsettings: BuildSetting;
 
-        defaultConfiguration = m_project.getDefaultConfiguration(settings.platform);
-        configurations = m_project.configurations.dup;
-
         foreach(targetName, targetInfo; targets) {
 
             auto newBuildSettings = targetInfo.buildSettings.dup;
@@ -183,5 +178,14 @@ class InfoGenerator: ProjectGenerator {
                                                    BuildSetting.noOptions /*???*/);
             dubPackages ~= DubPackage(targetName, newBuildSettings.dflags);
         }
+    }
+
+    string[] configurations() @trusted const {
+        return m_project.configurations;
+    }
+
+    string defaultConfiguration() @trusted const {
+        auto settings = generatorSettings();
+        return m_project.getDefaultConfiguration(settings.platform);
     }
 }
