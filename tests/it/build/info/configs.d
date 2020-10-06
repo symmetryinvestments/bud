@@ -23,23 +23,24 @@ import bud.build.info;
 }
 
 
-// @("explicit")
-// @safe unittest {
-//     with(immutable BudSandbox()) {
-//         writeFile(
-//             "dub.sdl",
-//             [
-//                 `name "theproj"`,
-//                 `configuration "exe" {`,
-//                 `    targetType "executable"`,
-//                 `}`,
-//                 `configuration "lib"`,
-//                 `    targetType "staticLibrary`,
-//                 `}`,
-//             ]
-//         );
+@("explicit")
+@safe unittest {
+    with(immutable BudSandbox()) {
+        writeFile(
+            "dub.sdl",
+            [
+                `name "theproj"`,
+                `configuration "exe" {`,
+                    `targetType "executable"`,
+                `}`,
+                `configuration "lib" {`,
+                 `    targetType "staticLibrary"`,
+                `}`,
+            ]
+        );
+        writeFile("source/app.d", q{void main() {}});
 
-//         dubConfigurations(ProjectPath(testPath), UserPackagesPath()).should ==
-//             DubConfigurations(["exe", "lib"], "exe");
-//     }
-// }
+        dubConfigurations(ProjectPath(testPath), UserPackagesPath()).should ==
+            DubConfigurations(["exe", "lib"], "exe");
+    }
+}
