@@ -22,9 +22,10 @@ UserPackagesPath userPackagesPath() {
     import std.path: buildPath, isAbsolute;
     import std.file: getcwd;
 
-    version(Windows)
+    version(Windows) {
+        immutable appDataDir = environment.get("APPDATA");
         const path = buildPath(environment.get("LOCALAPPDATA", appDataDir), "dub");
-    else version(Posix) {
+    } else version(Posix) {
         string path = buildPath(environment.get("HOME"), ".dub/");
         if(!path.isAbsolute)
             path = buildPath(getcwd(), path);
