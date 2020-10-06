@@ -139,12 +139,12 @@ auto packageManager(in UserPackagesPath userPackagesPath) @trusted {
 }
 
 
-class TargetGenerator: ProjectGenerator {
-    import bud.api: Target;
+class InfoGenerator: ProjectGenerator {
+    import bud.api: DubPackage;
     import dub.project: Project;
     import dub.generators.generator: GeneratorSettings;
 
-    Target[] targets;
+    DubPackage[] dubPackages;
 
     this(Project project) {
         super(project);
@@ -176,7 +176,7 @@ class TargetGenerator: ProjectGenerator {
             auto newBuildSettings = targetInfo.buildSettings.dup;
             settings.compiler.prepareBuildSettings(newBuildSettings,
                                                    BuildSetting.noOptions /*???*/);
-            this.targets ~= Target(targetName, newBuildSettings.dflags);
+            dubPackages ~= DubPackage(targetName, newBuildSettings.dflags);
         }
     }
 }

@@ -6,22 +6,22 @@
 module bud.build.info;
 
 
-import bud.api: ProjectPath, UserPackagesPath, Target, Compiler;
+import bud.api: ProjectPath, UserPackagesPath, DubPackage, Compiler;
 
 
-Target[] targets(
+DubPackage[] targets(
     in ProjectPath projectPath,
     in UserPackagesPath userPackagesPath,
     in Compiler compiler,
     )
     @trusted  // dub...
 {
-    import bud.dub: project, generatorSettings, TargetGenerator;
+    import bud.dub: project, generatorSettings, InfoGenerator;
 
     auto proj = project(projectPath, userPackagesPath);
-    auto generator = new TargetGenerator(proj);
+    auto generator = new InfoGenerator(proj);
 
     generator.generate(generatorSettings(compiler));
 
-    return generator.targets;
+    return generator.dubPackages;
 }
