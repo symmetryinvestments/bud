@@ -150,7 +150,25 @@ class TargetGenerator: ProjectGenerator {
         super(project);
     }
 
-    override void generateTargets(GeneratorSettings settings, in TargetInfo[string] targets) {
+    /** Copied from the dub documentation:
+
+        Overridden in derived classes to implement the actual generator functionality.
+
+        The function should go through all targets recursively. The first target
+        (which is guaranteed to be there) is
+        $(D targets[m_project.rootPackage.name]). The recursive descent is then
+        done using the $(D TargetInfo.linkDependencies) list.
+
+        This method is also potentially responsible for running the pre and post
+        build commands, while pre and post generate commands are already taken
+        care of by the $(D generate) method.
+
+        Params:
+            settings = The generator settings used for this run
+            targets = A map from package name to TargetInfo that contains all
+                binary targets to be built.
+    */
+    override void generateTargets(GeneratorSettings settings, in TargetInfo[string] targets) @trusted {
         import dub.compilers.buildsettings: BuildSetting;
 
         foreach(targetName, targetInfo; targets) {
