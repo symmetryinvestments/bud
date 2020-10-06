@@ -1,11 +1,11 @@
-module it.build;
+module it.build.info.dflags;
 
 
 import it;
 import bud.build.info;
 
 
-@("targets.simplest.dmd")
+@("simplest.dmd")
 @safe unittest {
 
     import dub.compilers.buildsettings;
@@ -38,7 +38,7 @@ import bud.build.info;
 }
 
 
-@("targets.simplest.ldc")
+@("simplest.ldc")
 @safe unittest {
 
     import dub.compilers.buildsettings;
@@ -71,7 +71,7 @@ import bud.build.info;
 }
 
 
-@("targets.simplest.ldc")
+@("simplest.gdc")
 @safe unittest {
 
     import dub.compilers.buildsettings;
@@ -105,7 +105,7 @@ import bud.build.info;
 
 
 
-@("targets.dependencies")
+@("dependencies.dmd")
 @safe unittest {
 
     import dub.compilers.buildsettings;
