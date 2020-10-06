@@ -22,7 +22,7 @@ import std.algorithm: map;
             ]
         );
 
-        writeSelections;
+        writeDubSelections;
 
         writeFile("source/app.d",
                   "void main() {}");
@@ -52,7 +52,7 @@ import std.algorithm: map;
             ]
         );
 
-        writeSelections;
+        writeDubSelections;
 
         writeFile("source/app.d",
                   "void main() {}");
@@ -83,7 +83,7 @@ import std.algorithm: map;
             ]
         );
 
-        writeSelections;
+        writeDubSelections;
 
         writeFile("source/app.d",
                   "void main() {}");
@@ -116,24 +116,19 @@ import std.algorithm: map;
             ]
         );
 
-        writeSelections(["bar": "1.2.3"]);
+        writeDubSelections(["bar": "1.2.3"]);
 
-        writeFile("source/app.d",
-                  "void main() {}");
+        writeFile("source/app.d", q{void main() {}});
 
-        writeFile("userpath/packages/bar-1.2.3/bar/dub.sdl",
+        writeDownloadedDubSdl("userpath", "bar", "1.2.3",
                   [
                       `name "bar"`,
                       `targetType "library"`,
                       `dflags "-preview=dip1000"`,
-                      // This is needed: dub places a version field
-                      // as a dub.json/sdl of the fetched package
-                      // in ~/.dub where none existed in the original
-                      // package recipe.
-                      `version "1.2.3"`,
                   ]
         );
-        writeFile("userpath/packages/bar-1.2.3/bar/source/bar.d",
+
+        writeFile(buildPath(pkgPath("userpath", "bar", "1.2.3"), "source", "bar.d"),
                   "int add1(int i, int j) { return i + j; }");
 
         const tgts = targets(

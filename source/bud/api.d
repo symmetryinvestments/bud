@@ -17,7 +17,7 @@ struct UserPackagesPath {
 }
 
 
-struct Target {
+struct DubPackage {
     string name;
     string[] dflags;
 }
