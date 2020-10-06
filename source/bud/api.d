@@ -23,7 +23,7 @@ UserPackagesPath userPackagesPath() {
     import std.file: getcwd;
 
     version(Windows)
-        enum path = buildPath(environment.get("LOCALAPPDATA", appDataDir), "dub");
+        const path = buildPath(environment.get("LOCALAPPDATA", appDataDir), "dub");
     else version(Posix) {
         string path = buildPath(environment.get("HOME"), ".dub/");
         if(!path.isAbsolute)
