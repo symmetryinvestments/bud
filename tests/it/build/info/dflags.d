@@ -29,6 +29,7 @@ import std.algorithm: map;
 
         const pkgs = dubPackages(
             ProjectPath(testPath),
+            SystemPackagesPath(),
             UserPackagesPath(),
             Compiler.dmd,
         );
@@ -59,6 +60,7 @@ import std.algorithm: map;
 
         const pkgs = dubPackages(
             ProjectPath(testPath),
+            SystemPackagesPath(),
             UserPackagesPath(),
             Compiler.ldc,
         );
@@ -90,6 +92,7 @@ import std.algorithm: map;
 
         const pkgs = dubPackages(
             ProjectPath(testPath),
+            SystemPackagesPath(),
             UserPackagesPath(),
             Compiler.gdc,
         );
@@ -132,6 +135,7 @@ import std.algorithm: map;
 
         const pkgs = dubPackages(
             ProjectPath(testPath),
+            SystemPackagesPath(),
             UserPackagesPath(inSandboxPath("userpath")),
             Compiler.dmd,
         );
