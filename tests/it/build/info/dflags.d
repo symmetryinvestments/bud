@@ -27,13 +27,14 @@ import std.algorithm: map;
         writeFile("source/app.d",
                   "void main() {}");
 
-        const tgts = targets(
+        const pkgs = dubPackages(
             ProjectPath(testPath),
+            SystemPackagesPath(),
             UserPackagesPath(),
             Compiler.dmd,
         );
 
-        tgts.map!(a => a.dflags).should == [["-debug", "-g", "-w"]];
+        pkgs.map!(a => a.dflags).should == [["-debug", "-g", "-w"]];
     }
 }
 
@@ -57,13 +58,14 @@ import std.algorithm: map;
         writeFile("source/app.d",
                   "void main() {}");
 
-        const tgts = targets(
+        const pkgs = dubPackages(
             ProjectPath(testPath),
+            SystemPackagesPath(),
             UserPackagesPath(),
             Compiler.ldc,
         );
 
-        tgts.map!(a => a.dflags).should ==
+        pkgs.map!(a => a.dflags).should ==
             [["-d-debug", "-g", "-w", "-oq", "-od=.dub/obj"]];
     }
 }
@@ -88,13 +90,14 @@ import std.algorithm: map;
         writeFile("source/app.d",
                   "void main() {}");
 
-        const tgts = targets(
+        const pkgs = dubPackages(
             ProjectPath(testPath),
+            SystemPackagesPath(),
             UserPackagesPath(),
             Compiler.gdc,
         );
 
-        tgts.map!(a => a.dflags).should == [["-fdebug", "-g", "-Werror", "-Wall"]];
+        pkgs.map!(a => a.dflags).should == [["-fdebug", "-g", "-Werror", "-Wall"]];
     }
 }
 
@@ -130,14 +133,15 @@ import std.algorithm: map;
         writeFile(buildPath(pkgPath("userpath", "bar", "1.2.3"), "source", "bar.d"),
                   "int add1(int i, int j) { return i + j; }");
 
-        const tgts = targets(
+        const pkgs = dubPackages(
             ProjectPath(testPath),
+            SystemPackagesPath(),
             UserPackagesPath(inSandboxPath("userpath")),
             Compiler.dmd,
         );
 
         // apparently dflags is viral
-        tgts.map!(a => a.dflags).should == [
+        pkgs.map!(a => a.dflags).should == [
             ["-preview=dip1000", "-debug", "-g", "-w"],
             ["-preview=dip1000", "-debug", "-g", "-w"],
         ];

@@ -4,7 +4,7 @@
 module bud.dub;
 
 
-import bud.api: ProjectPath, UserPackagesPath, Compiler;
+import bud.api: ProjectPath, SystemPackagesPath, UserPackagesPath, Compiler;
 import dub.generators.generator: ProjectGenerator;
 
 
@@ -47,8 +47,8 @@ struct DubPackages {
     private PackageManager _packageManager;
     private string _userPackagesPath;
 
-    this(in UserPackagesPath userPackagesPath) @safe {
-        _packageManager = packageManager(userPackagesPath);
+    this(in SystemPackagesPath systemPackagesPath, in UserPackagesPath userPackagesPath) @safe {
+        _packageManager = packageManager(systemPackagesPath, userPackagesPath);
         _userPackagesPath = userPackagesPath.value;
     }
 
@@ -95,12 +95,14 @@ auto generatorSettings(in Compiler compiler = Compiler.dmd) @safe {
 }
 
 
-auto project(in ProjectPath projectPath, in UserPackagesPath userPackagesPath)
+auto project(in ProjectPath projectPath,
+             in SystemPackagesPath systemPackagesPath,
+             in UserPackagesPath userPackagesPath)
     @trusted
 {
     import dub.project: Project;
     auto pkg = dubPackage(projectPath);
-    return new Project(packageManager(userPackagesPath), pkg);
+    return new Project(packageManager(systemPackagesPath, userPackagesPath), pkg);
 }
 
 
@@ -127,14 +129,17 @@ private auto recipe(in ProjectPath projectPath) @safe {
 }
 
 
-auto packageManager(in UserPackagesPath userPackagesPath) @trusted {
+auto packageManager(in SystemPackagesPath systemPackagesPath,
+                    in UserPackagesPath userPackagesPath)
+    @trusted
+{
     import dub.internal.vibecompat.inet.path: NativePath;
     import dub.packagemanager: PackageManager;
 
     const userPath = NativePath(userPackagesPath.value);
-    const systemPath = NativePath("/dev/null");
-
+    const systemPath = NativePath(systemPackagesPath.value);
     const refreshPackages = false;
+
     return new PackageManager(userPath, systemPath, refreshPackages);
 }
 
