@@ -17,7 +17,7 @@ import bud.build.info;
         );
         writeFile("source/app.d", q{void main() {}});
 
-        dubConfigurations(ProjectPath(testPath), UserPackagesPath()).should ==
+        dubConfigurations(ProjectPath(testPath)).should ==
             DubConfigurations(["application", "library"], "application");
     }
 }
@@ -40,7 +40,7 @@ import bud.build.info;
         );
         writeFile("source/app.d", q{void main() {}});
 
-        dubConfigurations(ProjectPath(testPath), UserPackagesPath()).should ==
+        dubConfigurations(ProjectPath(testPath)).should ==
             DubConfigurations(["exe", "lib"], "exe");
     }
 }

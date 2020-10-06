@@ -6,10 +6,10 @@
 module bud.build.info;
 
 
-import bud.api: ProjectPath, UserPackagesPath, DubPackage, Compiler, DubConfigurations;
+import bud.api: ProjectPath, UserPackagesPath, userPackagesPath, DubPackage, Compiler, DubConfigurations;
 
 
-DubPackage[] targets(
+DubPackage[] dubPackages(
     in ProjectPath projectPath,
     in UserPackagesPath userPackagesPath,
     in Compiler compiler,
@@ -29,7 +29,7 @@ DubPackage[] targets(
 
 DubConfigurations dubConfigurations(
     in ProjectPath projectPath,
-    in UserPackagesPath userPackagesPath,
+    in UserPackagesPath userPackagesPath = userPackagesPath(),
     )
     @trusted  // dub...
 {

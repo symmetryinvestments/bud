@@ -132,9 +132,9 @@ auto packageManager(in UserPackagesPath userPackagesPath) @trusted {
     import dub.packagemanager: PackageManager;
 
     const userPath = NativePath(userPackagesPath.value);
-    const systemPath = NativePath("/dev/null");
-
+    const systemPath = NativePath("/dev/null");  // FIXME?
     const refreshPackages = false;
+
     return new PackageManager(userPath, systemPath, refreshPackages);
 }
 
