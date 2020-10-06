@@ -6,28 +6,8 @@
 module bud.build.info;
 
 
-/// What it says on the tin
-struct ProjectPath {
-    string value;
-}
+import bud.api: ProjectPath, UserPackagesPath, Target, Compiler;
 
-/// Normally ~/.dub
-struct UserPackagesPath {
-    string value = "/dev/null";
-}
-
-
-struct Target {
-    string name;
-    string[] dflags;
-}
-
-
-enum Compiler {
-    dmd,
-    ldc,
-    gdc,
-}
 
 Target[] targets(
     in ProjectPath projectPath,

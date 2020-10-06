@@ -1,15 +1,17 @@
-module it.build;
+module it.build.info.dflags;
 
 
 import it;
+import bud.api;
 import bud.build.info;
+import std.algorithm: map;
 
 
-@("targets.simplest.dmd")
+@("simplest.dmd")
 @safe unittest {
 
     import dub.compilers.buildsettings;
-    import std.algorithm: map;
+
     import std.path: buildPath;
 
     with(immutable BudSandbox()) {
@@ -31,18 +33,15 @@ import bud.build.info;
             Compiler.dmd,
         );
 
-        tgts.should == [
-            Target("foo", ["-debug", "-g", "-w"]),
-        ];
+        tgts.map!(a => a.dflags).should == [["-debug", "-g", "-w"]];
     }
 }
 
 
-@("targets.simplest.ldc")
+@("simplest.ldc")
 @safe unittest {
 
     import dub.compilers.buildsettings;
-    import std.algorithm: map;
     import std.path: buildPath;
 
     with(immutable BudSandbox()) {
@@ -64,18 +63,16 @@ import bud.build.info;
             Compiler.ldc,
         );
 
-        tgts.should == [
-            const Target("foo", ["-d-debug", "-g", "-w", "-oq", "-od=.dub/obj"]),
-        ];
+        tgts.map!(a => a.dflags).should ==
+            [["-d-debug", "-g", "-w", "-oq", "-od=.dub/obj"]];
     }
 }
 
 
-@("targets.simplest.ldc")
+@("simplest.gdc")
 @safe unittest {
 
     import dub.compilers.buildsettings;
-    import std.algorithm: map;
     import std.path: buildPath;
 
     with(immutable BudSandbox()) {
@@ -97,15 +94,13 @@ import bud.build.info;
             Compiler.gdc,
         );
 
-        tgts.should == [
-            const Target("foo", ["-fdebug", "-g", "-Werror", "-Wall"]),
-        ];
+        tgts.map!(a => a.dflags).should == [["-fdebug", "-g", "-Werror", "-Wall"]];
     }
 }
 
 
 
-@("targets.dependencies")
+@("dependencies.dmd")
 @safe unittest {
 
     import dub.compilers.buildsettings;
@@ -148,9 +143,9 @@ import bud.build.info;
         );
 
         // apparently dflags is viral
-        tgts.should == [
-            const Target("foo", ["-preview=dip1000", "-debug", "-g", "-w"]),
-            const Target("bar", ["-preview=dip1000", "-debug", "-g", "-w"]),
+        tgts.map!(a => a.dflags).should == [
+            ["-preview=dip1000", "-debug", "-g", "-w"],
+            ["-preview=dip1000", "-debug", "-g", "-w"],
         ];
     }
 }
