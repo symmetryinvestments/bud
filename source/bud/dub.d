@@ -4,7 +4,7 @@
 module bud.dub;
 
 
-import bud.build.info: ProjectPath, UserPackagesPath, Compiler;
+import bud.api: ProjectPath, UserPackagesPath, Compiler;
 import dub.generators.generator: ProjectGenerator;
 
 
@@ -140,7 +140,7 @@ auto packageManager(in UserPackagesPath userPackagesPath) @trusted {
 
 
 class TargetGenerator: ProjectGenerator {
-    import bud.build.info: Target;
+    import bud.api: Target;
     import dub.project: Project;
     import dub.generators.generator: GeneratorSettings;
 

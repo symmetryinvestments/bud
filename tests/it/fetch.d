@@ -3,7 +3,7 @@ module it.fetch;
 
 import it;
 import test.zip;
-import bud.build.info: UserPackagesPath;
+import bud.api: UserPackagesPath;
 import bud.dub: DubPackages, Path, JSONString;
 
 

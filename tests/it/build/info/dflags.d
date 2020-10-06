@@ -2,6 +2,7 @@ module it.build.info.dflags;
 
 
 import it;
+import bud.api;
 import bud.build.info;
 
 
